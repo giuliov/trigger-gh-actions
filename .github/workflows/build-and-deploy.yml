@@ -41,7 +41,7 @@ jobs:
       if: ${{ fromJSON(env.is_default_branch) }}
       run: 'echo "on default branch"'
     - name: 'If release branch'
-      if: ${{ fromJSON(is_release_branch) }}
+      if: ${{ fromJSON(env.is_release_branch) }}
       run: 'echo "on release branch ${{ github.ref }}"'
     - name: 'If tagged [env]'
       if: ${{ fromJSON(env.has_v_tag) }}

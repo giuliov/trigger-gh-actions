@@ -13,6 +13,7 @@ on:
 env:
   has_v_tag: ${{ startsWith(github.ref, 'refs/tags/v') }}
   is_default_branch: ${{ github.ref == 'refs/heads/main' }}
+  is_release_branch: ${{ startsWith(github.ref, 'refs/heads/release') }}
 
 jobs:
 
@@ -23,6 +24,12 @@ jobs:
     - name: 'Run Always'
       run: 'echo "always has_v_tag=$has_v_tag is_default_branch=$is_default_branch"'
 
+    - name: 'If default branch'
+      if: ${{ github.ref == 'refs/heads/main' }}
+      run: 'echo "on default branch"'
+    - name: 'If release branch'
+      if: ${{ startsWith(github.ref, 'refs/heads/release') }}
+      run: 'echo "on release branch ${{ github.ref }}"'
     - name: 'If tagged'
       if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       run: 'echo "v-tagged"'
@@ -33,6 +40,9 @@ jobs:
     - name: 'If default branch [env]'
       if: ${{ fromJSON(env.is_default_branch) }}
       run: 'echo "on default branch"'
+    - name: 'If release branch'
+      if: ${{ fromJSON(is_release_branch) }}
+      run: 'echo "on release branch ${{ github.ref }}"'
     - name: 'If tagged [env]'
       if: ${{ fromJSON(env.has_v_tag) }}
       run: 'echo "tagged"'

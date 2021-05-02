@@ -31,11 +31,11 @@ jobs:
       run: 'echo v-tag or main'
 
     - name: 'If default branch'
-      if: ${{ is_default_branch }}
+      if: ${{ env.is_default_branch }}
       run: 'echo on default branch'
     - name: 'If tagged'
-      if: ${{ has_v_tag }}
+      if: ${{ env.has_v_tag }}
       run: 'echo tagged'
     - name: 'If tagged or default branch'
-      if: ${{ has_v_tag || is_default_branch }}
+      if: ${{ env.has_v_tag || env.is_default_branch }}
       run: 'echo v-tag or main'

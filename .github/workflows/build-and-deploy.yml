@@ -1,0 +1,41 @@
+name: build-and-deploy
+
+on:
+  push:
+    paths:
+    - '.github/workflows/build-and-deploy.yml'
+    - 'src/**'
+  pull_request:
+    paths:
+    - '.github/workflows/build-and-deploy.yml'
+    - 'src/**'
+
+env:
+  has_v_tag: ${{ startsWith(github.ref, 'refs/tags/v') }}
+  is_default_branch: ${{  github.ref == 'refs/heads/main' }}
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Run Always'
+      run: 'echo always'
+
+    - name: 'If tagged'
+      if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      run: 'echo v-tag'
+    - name: 'If tagged or default branch'
+      if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
+      run: 'echo v-tag or main'
+
+    - name: 'If default branch'
+      if: ${{ is_default_branch }}
+      run: 'echo on default branch'
+    - name: 'If tagged'
+      if: ${{ has_v_tag }}
+      run: 'echo tagged'
+    - name: 'If tagged or default branch'
+      if: ${{ has_v_tag || is_default_branch }}
+      run: 'echo v-tag or main'

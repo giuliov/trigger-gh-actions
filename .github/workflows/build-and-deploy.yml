@@ -1,7 +1,8 @@
 name: build-and-deploy
 
 on:
-  push:
+  workflow_dispatch: # allow manual queueing
+  push: # trigger for push of commits, tags, opening of a PR
     paths:
     - '.github/workflows/build-and-deploy.yml'
     - 'src/**'
@@ -12,6 +13,7 @@ on:
 
 env:
   has_v_tag: ${{ startsWith(github.ref, 'refs/tags/v') }}
+  # NB github.ref for a PR is refs/pull/... 
   is_default_branch: ${{ github.ref == 'refs/heads/main' }}
   is_release_branch: ${{ startsWith(github.ref, 'refs/heads/release') }}
   ## this won't work as env context is not available at the workflow (top/root) level
@@ -20,6 +22,10 @@ env:
   triggered_by: ${{ github.event_name }}
   target_branch: ${{ github.base_ref }}
   source_branch: ${{ github.head_ref }}
+  is_pull_request: ${{ github.event_name == 'pull_request' }}
+  # any PR, any push to default branch, 
+  run_integration_tests: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
+  release_new_version: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
 jobs:
 
@@ -35,6 +41,18 @@ jobs:
         echo "triggered_by = $triggered_by"
         echo "target_branch = $target_branch"
         echo "source_branch = $source_branch"
+
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJSON(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
+    - name: 'If run_integration_tests'
+      if: ${{ fromJSON(env.run_integration_tests) }}
+      run: 'echo "Integration tests running..."'
+    - name: 'If release_new_version'
+      if: ${{ fromJSON(env.release_new_version) }}
+      run: 'echo "Releasing a new version..."'
 
     - name: 'If default branch'
       if: ${{ github.ref == 'refs/heads/main' }}

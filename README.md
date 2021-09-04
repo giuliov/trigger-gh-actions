@@ -1,2 +1,2 @@
 # trigger-gh-actions
-Play with triggers and conditions
+Play with triggers and conditions.

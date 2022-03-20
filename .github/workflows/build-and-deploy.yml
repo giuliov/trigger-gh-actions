@@ -19,17 +19,17 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    outputs:
+      magic_value: '${{ env.has_v_tag }}'    
     steps:
     - name: 'Run Always'
       run: 'echo "always has_v_tag=$has_v_tag is_default_branch=$is_default_branch"'
-
     - name: 'If tagged'
       if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       run: 'echo "v-tagged"'
     - name: 'If tagged or default branch'
       if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' }}
       run: 'echo "v-tagged or main"'
-
     - name: 'If default branch [env]'
       if: ${{ fromJSON(env.is_default_branch) }}
       run: 'echo "on default branch"'
@@ -39,10 +39,11 @@ jobs:
     - name: 'If tagged or default branch [env]'
       if: ${{ fromJSON(env.has_v_tag) || fromJSON(env.is_default_branch) }}
       run: 'echo "v-tagged or main"'
-
+      
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ fromJSON(env.is_default_branch) }}
+    needs: [build]
+    if: ${{ fromJSON(needs.build.outputs.magic_value) }}
     steps:
-    - name: 'Run Always'
+    - name: 'Dump vars'
       run: 'echo "always has_v_tag=$has_v_tag is_default_branch=$is_default_branch"'

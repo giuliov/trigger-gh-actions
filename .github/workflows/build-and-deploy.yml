@@ -39,3 +39,10 @@ jobs:
     - name: 'If tagged or default branch [env]'
       if: ${{ fromJSON(env.has_v_tag) || fromJSON(env.is_default_branch) }}
       run: 'echo "v-tagged or main"'
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ fromJSON(env.is_default_branch) }}
+    steps:
+    - name: 'Run Always'
+      run: 'echo "always has_v_tag=$has_v_tag is_default_branch=$is_default_branch"'

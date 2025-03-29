@@ -45,7 +45,7 @@ jobs:
         run: |
           if ('${{ github.event_name }}' -eq 'workflow_run') {
             echo "artifacts-run-id=${{ github.event.workflow_run.id }}" >> $env:GITHUB_OUTPUT
-          } if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+          } elseif ('${{ github.event_name }}' -eq 'workflow_dispatch') {
             echo "artifacts-run-id=${{ inputs.ci-run-id }}" >> $env:GITHUB_OUTPUT
           } else {
             exit 1

@@ -42,4 +42,4 @@ jobs:
           # this should fail for workflow_dispatch
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.workflow_id }}
+          run-id: ${{ github.event.workflow_run.id }}

@@ -2,10 +2,10 @@ name: Pseudo-CI
 on:
   push:
     paths:
-    - '/trigger/pseudo-ci'
+    - 'trigger/pseudo-ci'
   pull_request:
     paths:
-    - '/trigger/pseudo-ci'
+    - 'trigger/pseudo-ci'
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel

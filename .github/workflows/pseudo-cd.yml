@@ -1,10 +1,15 @@
 name: Pseudo-CD
 on:
-  workflow_dispatch:
   workflow_run:
     workflows: [Pseudo-CI]
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      ci-run-id:
+        type: number
+        required: true
+        description: "The ID of the build/CI workflow to use as source for artifacts."
 
 jobs:
   cd:
@@ -35,11 +40,26 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
+      - id: run-id
+        name: 'Manual or Triggered?'
+        run: |
+          if ('${{ github.event_name }}' -eq 'workflow_run') {
+            echo "artifacts-run-id=${{ github.event.workflow_run.id }}" >> $env:GITHUB_OUTPUT
+          } if () {
+            echo "artifacts-run-id=${{ inputs.ci-run-id }}" >> $env:GITHUB_OUTPUT
+          } else {
+            exit 1
+          }
+        shell: pwsh
       - name: Download a Build Artifact
         uses: actions/download-artifact@v4.2.1
         with:
           name: app
-          # this should fail for workflow_dispatch
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.run-id.outputs.artifacts-run-id }}
+      - name: Emulates a deploy
+        run: |
+          ls -l app*
+          chmod +x app.sh
+          ./app.sh
